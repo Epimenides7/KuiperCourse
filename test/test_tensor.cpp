@@ -30,9 +30,9 @@ TEST(test_tensor, fill) {
 
   int index = 0;
   for (int c = 0; c < tensor.channels(); ++c) {
-    for (int c_ = 0; c_ < tensor.cols(); ++c_) {
-      for (int r = 0; r < tensor.rows(); ++r) {
-        ASSERT_EQ(values.at(index), tensor.at(c, c_, r));
+    for (int r = 0; r < tensor.rows(); ++r) {
+      for (int c_ = 0; c_ < tensor.cols(); ++c_) {
+        ASSERT_EQ(values.at(index), tensor.at(c, r, c_));
         index += 1;
       }
     }
@@ -55,10 +55,10 @@ TEST(test_tensor, padding1) {
   int index = 0;
   // 检查一下边缘被填充的行、列是否都是0
   for (int c = 0; c < tensor.channels(); ++c) {
-    for (int c_ = 0; c_ < tensor.cols(); ++c_) {
-      for (int r = 0; r < tensor.rows(); ++r) {
+    for (int r = 0; r < tensor.rows(); ++r) {
+      for (int c_ = 0; c_ < tensor.cols(); ++c_) {
         if (c_ == 0 || r == 0) {
-          ASSERT_EQ(tensor.at(c, c_, r), 0);
+          ASSERT_EQ(tensor.at(c, r, c_), 0);
         }
         index += 1;
       }
