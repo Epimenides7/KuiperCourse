@@ -21,6 +21,7 @@ std::shared_ptr<Tensor<float >> CSVDataLoader::LoadDataWithHeader(const std::str
   arma::fmat &data = input_tensor->at(0);
 
   size_t row = 0;
+  bool header_flag = true;
   while (in.good()) {
     std::getline(in, line_str);
     if (line_str.empty()) {
@@ -34,16 +35,21 @@ std::shared_ptr<Tensor<float >> CSVDataLoader::LoadDataWithHeader(const std::str
     size_t col = 0;
     while (line_stream.good()) {
       std::getline(line_stream, token, split_char);
-      try {
-        //todo 补充
-        // 能够读取到第一行的csv列名，并存放在headers中
-        // 能够读取到第二行之后的csv数据，并相应放置在data变量的row，col位置中
+      if (header_flag){
+        headers.push_back(token);
+      } else {
+        try {
+            data.at(row - 1, col) = std::stof(token);
+        }
+        catch (std::exception &e) {
+          LOG(ERROR) << "Parse CSV File meet error: " << e.what();
+          continue;
+        }
       }
-      catch (std::exception &e) {
-        LOG(ERROR) << "Parse CSV File meet error: " << e.what();
-        continue;
-      }
+      // LOG(INFO) << "header_flag : " << header_flag ;
+      // LOG(INFO) << "headers's size : " << headers.size();
       col += 1;
+      if (col == cols) header_flag = false;
       CHECK(col <= cols) << "There are excessive elements on the column";
     }
 
